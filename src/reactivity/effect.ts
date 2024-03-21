@@ -48,6 +48,7 @@ const targetMap = new Map();
  * @param key  目标对象的属性
  */
 export function track(target: any, key: string | symbol) {
+  if (!activeEffect) return;
   let depsMap = targetMap.get(target);
   if (!depsMap) {
     targetMap.set(target, (depsMap = new Map()));
