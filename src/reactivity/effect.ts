@@ -8,12 +8,14 @@ let activeEffect: any;
  */
 class ReactiveEffect {
   _fn: () => void;
-  constructor(fn: () => void) {
-    activeEffect = this;
+  public scheduler: any;
+  constructor(fn: () => void, scheduler: any) {
     this._fn = fn;
+    this.scheduler = scheduler;
   }
 
   run() {
+    activeEffect = this;
     return this._fn();
   }
 }
@@ -49,7 +51,11 @@ export function trigger(target: any, key: string | symbol) {
   const deps = depsMap.get(key);
   if (deps) {
     deps.forEach((effect: any) => {
+      if (effect.scheduler) {
+        effect.scheduler(effect.run.bind(effect));
+      } else {
       effect.run();
+      }
     });
   }
 }
@@ -57,8 +63,8 @@ export function trigger(target: any, key: string | symbol) {
  * 创建一个effect
  * @param fn  依赖函数
  */
-export function effect(fn: () => any) {
-  const _effect = new ReactiveEffect(fn);
+export function effect(fn: () => any, options: { scheduler?: any } = {}) {
+  const _effect = new ReactiveEffect(fn, options.scheduler);
   _effect.run();
   return _effect.run.bind(_effect);
 }
