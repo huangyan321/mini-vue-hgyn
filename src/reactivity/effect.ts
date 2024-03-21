@@ -14,7 +14,7 @@ class ReactiveEffect {
   }
 
   run() {
-    this._fn();
+    return this._fn();
   }
 }
 /**
@@ -60,4 +60,5 @@ export function trigger(target: any, key: string | symbol) {
 export function effect(fn: () => any) {
   const _effect = new ReactiveEffect(fn);
   _effect.run();
+  return _effect.run.bind(_effect);
 }
