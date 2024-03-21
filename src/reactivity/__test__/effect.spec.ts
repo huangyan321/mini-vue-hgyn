@@ -1,7 +1,6 @@
 /** @format */
 
-import { reactive } from '..';
-import { effect } from '..';
+import { reactive, effect, stop } from '..';
 /** @format */
 describe('effect', () => {
   it('happy-path', () => {
@@ -64,5 +63,20 @@ describe('effect', () => {
     expect(dummy).toBe(1);
     run();
     expect(dummy).toBe(2);
+  });
+
+  it('stop', () => {
+    let dummy;
+    const obj = reactive({ prop: 1 });
+    const runner = effect(() => {
+      dummy = obj.prop;
+    });
+    obj.prop = 2;
+    expect(dummy).toBe(2);
+    stop(runner);
+    obj.prop = 3;
+    expect(dummy).toBe(2);
+    runner();
+    expect(dummy).toBe(3);
   });
 });

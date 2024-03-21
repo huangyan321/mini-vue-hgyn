@@ -9,6 +9,8 @@ let activeEffect: any;
 class ReactiveEffect {
   _fn: () => void;
   public scheduler: any;
+  public deps: any[] = [];
+  active: boolean = true;
   constructor(fn: () => void, scheduler: any) {
     this._fn = fn;
     this.scheduler = scheduler;
@@ -17,6 +19,23 @@ class ReactiveEffect {
   run() {
     activeEffect = this;
     return this._fn();
+  }
+
+  stop() {
+    if (this.active) {
+      cleanupEffect(this);
+      this.active = false;
+    }
+  }
+}
+
+function cleanupEffect(effect: any) {
+  if (activeEffect) {
+    activeEffect.deps.forEach((dep: any) => {
+      dep.delete(activeEffect);
+    });
+    activeEffect.deps.length = 0;
+    activeEffect = null;
   }
 }
 /**
@@ -33,11 +52,13 @@ export function track(target: any, key: string | symbol) {
   if (!depsMap) {
     targetMap.set(target, (depsMap = new Map()));
   }
-  let deps = depsMap.get(key);
-  if (!deps) {
-    depsMap.set(key, (deps = new Set()));
+  let dep = depsMap.get(key);
+  if (!dep) {
+    depsMap.set(key, (dep = new Set()));
   }
-  deps.add(activeEffect);
+  dep.add(activeEffect);
+
+  activeEffect.deps.push(dep);
 }
 /**
  * 触发更新
@@ -54,7 +75,7 @@ export function trigger(target: any, key: string | symbol) {
       if (effect.scheduler) {
         effect.scheduler(effect.run.bind(effect));
       } else {
-      effect.run();
+        effect.run();
       }
     });
   }
@@ -66,5 +87,11 @@ export function trigger(target: any, key: string | symbol) {
 export function effect(fn: () => any, options: { scheduler?: any } = {}) {
   const _effect = new ReactiveEffect(fn, options.scheduler);
   _effect.run();
-  return _effect.run.bind(_effect);
+  const runner = _effect.run.bind(_effect);
+  (runner as any).effect = _effect;
+  return runner;
+}
+
+export function stop(runner: any) {
+  runner.effect.stop();
 }
