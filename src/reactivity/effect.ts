@@ -8,7 +8,7 @@ let shouldTrack = true;
 /**
  * effect类
  */
-class ReactiveEffect {
+export class ReactiveEffect {
   _fn: () => void;
   public scheduler: any;
   public deps: any[] = [];
@@ -65,15 +65,18 @@ export function track(target: any, key: string | symbol) {
   if (!dep) {
     depsMap.set(key, (dep = new Set()));
   }
-  if (dep.has(activeEffect)) return;
+  trackEffects(dep);
+}
+export function trackEffects(dep: Set<ReactiveEffect>) {
+  if (!isTracking()) return; //TODO 干掉
+  if (dep.has(activeEffect!)) return;
   // 依赖收集，用于在触发更新的时候重新执行effect
   // 这里的dep是一个set，用于存储当前key关联的副作用(effect)
-  dep.add(activeEffect);
+  dep.add(activeEffect!);
   // 反向收集，用于effect在stop的时候能够从相关的依赖(dep)中清除自己
   activeEffect!.deps.push(dep);
 }
-
-function isTracking() {
+export function isTracking() {
   return shouldTrack && activeEffect !== undefined;
 }
 /**
@@ -87,14 +90,18 @@ export function trigger(target: any, key: string | symbol) {
   if (!depsMap) return;
   const deps = depsMap.get(key);
   if (deps) {
-    deps.forEach((effect: any) => {
-      if (effect.scheduler) {
-        effect.scheduler(effect.run.bind(effect));
-      } else {
-        effect.run();
-      }
-    });
+    triggerEffects(deps);
   }
+}
+
+export function triggerEffects(deps: Set<ReactiveEffect>) {
+  deps.forEach((effect: any) => {
+    if (effect.scheduler) {
+      effect.scheduler(effect.run.bind(effect));
+    } else {
+      effect.run();
+    }
+  });
 }
 /**
  * 创建一个effect
