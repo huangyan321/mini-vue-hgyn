@@ -1,7 +1,14 @@
 /** @format */
-import { track, trigger } from '.';
+import { reactive, track, trigger, readonly } from '.';
+import { isObject } from 'src/shared';
+import { ReactiveFlags } from './reactive';
 function createGetter<T extends object>(isReadonly = false) {
   return function get(target: T, key: string | symbol, receiver: any) {
+    if (key === ReactiveFlags.IS_REACTIVE) {
+      return !isReadonly;
+    } else if (key === ReactiveFlags.IS_READONLY) {
+      return isReadonly;
+    }
     const res = Reflect.get(target, key, receiver);
     // 依赖收集
     if (!isReadonly) {
