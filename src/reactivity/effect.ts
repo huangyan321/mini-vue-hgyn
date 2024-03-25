@@ -2,7 +2,9 @@
 /**
  * 用于存储当前的effect
  */
-let activeEffect: any;
+let activeEffect: ReactiveEffect | undefined;
+
+let shouldTrack = true;
 /**
  * effect类
  */
@@ -18,7 +20,13 @@ class ReactiveEffect {
 
   run() {
     activeEffect = this;
-    return this._fn();
+    if (this.active) {
+      return this._fn();
+    }
+    shouldTrack = true;
+    const result = this._fn();
+    shouldTrack = false;
+    return result;
   }
 
   stop() {
@@ -35,7 +43,7 @@ function cleanupEffect(effect: any) {
       dep.delete(activeEffect);
     });
     activeEffect.deps.length = 0;
-    activeEffect = null;
+    activeEffect = void 0;
   }
 }
 /**
@@ -48,7 +56,7 @@ const targetMap = new Map();
  * @param key  目标对象的属性
  */
 export function track(target: any, key: string | symbol) {
-  if (!activeEffect) return;
+  if (!isTracking()) return;
   let depsMap = targetMap.get(target);
   if (!depsMap) {
     targetMap.set(target, (depsMap = new Map()));
@@ -57,9 +65,16 @@ export function track(target: any, key: string | symbol) {
   if (!dep) {
     depsMap.set(key, (dep = new Set()));
   }
+  if (dep.has(activeEffect)) return;
+  // 依赖收集，用于在触发更新的时候重新执行effect
+  // 这里的dep是一个set，用于存储当前key关联的副作用(effect)
   dep.add(activeEffect);
+  // 反向收集，用于effect在stop的时候能够从相关的依赖(dep)中清除自己
+  activeEffect!.deps.push(dep);
+}
 
-  activeEffect.deps.push(dep);
+function isTracking() {
+  return shouldTrack && activeEffect !== undefined;
 }
 /**
  * 触发更新
