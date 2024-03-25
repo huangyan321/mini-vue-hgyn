@@ -1,5 +1,5 @@
 /** @format */
-import { readonly, isReadonly, shallowReadonly } from '..';
+import { readonly, isReadonly, shallowReadonly, isProxy } from '..';
 describe('readonly', () => {
   it('happy-path', () => {
     const original = { foo: 1 };
@@ -8,6 +8,7 @@ describe('readonly', () => {
     expect(observed.foo).toBe(1);
     observed.foo = 2;
     expect(observed.foo).toBe(1);
+    expect(isProxy(observed)).toBe(true);
   });
   it('should make nested values readonly', () => {
     const original = { foo: { bar: 1 } };

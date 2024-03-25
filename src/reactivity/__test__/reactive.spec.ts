@@ -1,11 +1,12 @@
 /** @format */
-import { reactive, isReactive } from '..';
+import { reactive, isReactive, isProxy } from '..';
 describe('effect', () => {
   it('happy-path', () => {
     const original = { foo: 1 };
     const observed = reactive(original);
     expect(observed).not.toBe(original);
     expect(observed.foo).toBe(1);
+    expect(isProxy(observed)).toBe(true);
   });
   it('should make nested values reactive', () => {
     const original = { foo: { bar: 1 }, arr: [1, 2, 3] };
