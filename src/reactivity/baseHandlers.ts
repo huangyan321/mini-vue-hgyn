@@ -11,7 +11,7 @@ function createGetter<T extends object>(isReadonly = false) {
   };
 }
 function createSetter<T extends object>(isReadonly = false) {
-  return function get(
+  return function set(
     target: T,
     key: string | symbol,
     value: any,
