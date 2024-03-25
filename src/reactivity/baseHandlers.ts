@@ -10,6 +10,10 @@ function createGetter<T extends object>(isReadonly = false) {
       return isReadonly;
     }
     const res = Reflect.get(target, key, receiver);
+
+    if (isObject(res)) {
+      return isReadonly ? readonly(res) : reactive(res);
+    }
     // 依赖收集
     if (!isReadonly) {
       track(target, key);

@@ -1,5 +1,5 @@
 /** @format */
-import { readonly } from '..';
+import { readonly, isReadonly } from '..';
 describe('readonly', () => {
   it('happy-path', () => {
     const original = { foo: 1 };
@@ -8,6 +8,12 @@ describe('readonly', () => {
     expect(observed.foo).toBe(1);
     observed.foo = 2;
     expect(observed.foo).toBe(1);
+  });
+  it('should make nested values readonly', () => {
+    const original = { foo: { bar: 1 } };
+    const observed = readonly(original);
+    expect(isReadonly(observed)).toBe(true);
+    expect(isReadonly(observed.foo)).toBe(true);
   });
   it('warn then call set', () => {
     console.warn = vi.fn();
