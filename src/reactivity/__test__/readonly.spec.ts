@@ -1,5 +1,5 @@
 /** @format */
-import { readonly, isReadonly } from '..';
+import { readonly, isReadonly, shallowReadonly } from '..';
 describe('readonly', () => {
   it('happy-path', () => {
     const original = { foo: 1 };
@@ -21,5 +21,11 @@ describe('readonly', () => {
     const observed = readonly(original);
     observed.foo = 2;
     expect(console.warn).toBeCalled();
+  });
+  it('shadowReadonly', () => {
+    const original = { foo: { bar: 1 } };
+    const observed = shallowReadonly(original);
+    expect(isReadonly(observed)).toBe(true);
+    expect(isReadonly(observed.foo)).toBe(false);
   });
 });

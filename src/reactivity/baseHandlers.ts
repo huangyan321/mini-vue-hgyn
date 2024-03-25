@@ -1,8 +1,15 @@
 /** @format */
 import { reactive, track, trigger, readonly } from '.';
-import { isObject } from 'src/shared';
+import { isObject, assign } from 'src/shared';
 import { ReactiveFlags } from './reactive';
-function createGetter<T extends object>(isReadonly = false) {
+const get = createGetter();
+const set = createSetter();
+
+const readonlyGet = createGetter(true);
+const readonlySet = createSetter(true);
+
+const shallowReadonlyGet = createGetter(true, true);
+function createGetter<T extends object>(isReadonly = false, isShallow = false) {
   return function get(target: T, key: string | symbol, receiver: any) {
     if (key === ReactiveFlags.IS_REACTIVE) {
       return !isReadonly;
@@ -11,7 +18,7 @@ function createGetter<T extends object>(isReadonly = false) {
     }
     const res = Reflect.get(target, key, receiver);
 
-    if (isObject(res)) {
+    if (isObject(res) && !isShallow) {
       return isReadonly ? readonly(res) : reactive(res);
     }
     // 依赖收集
@@ -41,10 +48,17 @@ function createSetter<T extends object>(isReadonly = false) {
 } /** @format */
 
 export const mutableHandlers: ProxyHandler<object> = {
-  get: createGetter(),
-  set: createSetter(),
+  get,
+  set,
 };
 export const readonlyHandlers: ProxyHandler<object> = {
-  get: createGetter(true),
-  set: createSetter(true),
+  get: readonlyGet,
+  set: readonlySet,
 };
+export const shallowReadonlyHandlers: ProxyHandler<object> = assign(
+  {},
+  readonlyHandlers,
+  {
+    get: shallowReadonlyGet,
+  }
+);
