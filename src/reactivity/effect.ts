@@ -13,7 +13,7 @@ export class ReactiveEffect {
   public scheduler: any;
   public deps: any[] = [];
   active: boolean = true;
-  constructor(fn: () => void, scheduler: any) {
+  constructor(fn: () => void, scheduler?: any) {
     this._fn = fn;
     this.scheduler = scheduler;
   }
