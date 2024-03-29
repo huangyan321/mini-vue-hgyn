@@ -11,7 +11,7 @@ export function createComponentInstance(vnode: any) {
 
 export function setupComponent(instance: any) {
   // TODO
-  // 1. 处理props
+  // 1. 处理props 将props挂载到实例上
   initProps(instance, instance.vnode.props);
   // 2. 处理slots
   setupStatefulComponent(instance);
@@ -23,7 +23,9 @@ export function setupStatefulComponent(instance: any) {
   const { setup } = component;
   if (setup) {
     // 执行setup
-    const setupResult = setup(shallowReadonly(instance.props));
+    const setupResult = setup(shallowReadonly(instance.props), {
+      emit: instance.vnode.emit.bind(null, instance),
+    });
     handleSetupResult(instance, setupResult);
   }
 }

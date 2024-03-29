@@ -1,6 +1,8 @@
 /** @format */
 import { h } from '../../lib/mini-vue.esm.js';
-import { Foo } from './Foo.js';
+// import { Foo } from './Foo__props-test.js';
+import { Foo } from './Foo__emit-test.js';
+
 export const App = {
   render() {
     window.self = this;
@@ -11,25 +13,18 @@ export const App = {
           style: {
             color: 'red',
           },
-          onClick() {
-            console.log('click');
-          },
-          onMousedown() {
+          onMousedown: () => {
             console.log('mousedown');
           },
         },
         `${this.msg}`
       ),
       h(Foo, {
-        style: {
-          color: 'red',
+        onAdd: (num1, num2) => {
+          console.log(num1 + num2);
         },
-        parentMsg: 'parentMsg',
-        onClick() {
-          console.log('click');
-        },
-        onMousedown() {
-          console.log('mousedown');
+        onAddFoo: (num1, num2) => {
+          console.log(num1 + num2);
         },
       }),
     ]);
