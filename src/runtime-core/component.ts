@@ -1,5 +1,7 @@
 /** @format */
 import { publicInstanceProxyHandlers } from './componentPublicInstance';
+import { initProps } from './componentProps';
+import { shallowReadonly } from '../reactivity';
 export function createComponentInstance(vnode: any) {
   const instance = {
     vnode,
@@ -10,6 +12,7 @@ export function createComponentInstance(vnode: any) {
 export function setupComponent(instance: any) {
   // TODO
   // 1. 处理props
+  initProps(instance, instance.vnode.props);
   // 2. 处理slots
   setupStatefulComponent(instance);
 }
@@ -20,7 +23,7 @@ export function setupStatefulComponent(instance: any) {
   const { setup } = component;
   if (setup) {
     // 执行setup
-    const setupResult = setup();
+    const setupResult = setup(shallowReadonly(instance.props));
     handleSetupResult(instance, setupResult);
   }
 }

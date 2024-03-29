@@ -1,5 +1,6 @@
 /** @format */
 import { h } from '../../lib/mini-vue.esm.js';
+import { Foo } from './Foo.js';
 export const App = {
   render() {
     window.self = this;
@@ -19,6 +20,18 @@ export const App = {
         },
         `${this.msg}`
       ),
+      h(Foo, {
+        style: {
+          color: 'red',
+        },
+        parentMsg: 'parentMsg',
+        onClick() {
+          console.log('click');
+        },
+        onMousedown() {
+          console.log('mousedown');
+        },
+      }),
     ]);
   },
 
