@@ -20,26 +20,39 @@ function processElement(vnode: any, container: any) {
 }
 
 function mountElement(vnode: any, container: any) {
-  const el = document.createElement('div');
+  const { type, props = {}, children } = vnode;
 
-  el.textContent = 'hi mini-vue';
+  const el = (vnode.el = document.createElement(type));
+  if (typeof children === 'string') {
+    el.textContent = children;
+  } else if (Array.isArray(children)) {
+    mountChildren(children, container);
+  }
+  // handle props
+  for (const key in props) {
+    el.setAttribute(key, props[key]);
+  }
+  container.appendChild(el);
+}
 
-  el.setAttribute('id', 'root');
-  document.body.appendChild(el);
+function mountChildren(children: any[], container: any) {
+  children.forEach((child) => {
+    patch(child, container);
+  });
 }
 function processComponent(vnode: any, container: any) {
   mountComponent(vnode, container);
 }
 
-function mountComponent(vnode: any, container: any) {
-  const instance = createComponentInstance(vnode);
+function mountComponent(initialVNode: any, container: any) {
+  const instance = createComponentInstance(initialVNode);
   setupComponent(instance);
-
-  setupRenderEffect(instance, container);
+  setupRenderEffect(instance, initialVNode, container);
 }
 
-function setupRenderEffect(instance: any, container: any) {
-  const subTree = instance.render && instance.render();
-
+function setupRenderEffect(instance: any, initialVNode: any, container: any) {
+  const { proxy } = instance;
+  const subTree = instance.render && instance.render.apply(proxy);
   patch(subTree, container);
+  initialVNode.el = subTree.el;
 }

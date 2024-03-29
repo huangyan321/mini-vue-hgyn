@@ -2,12 +2,23 @@
 import { h } from '../../lib/mini-vue.esm.js';
 export const App = {
   render() {
-    return h('div', 'hi' + this.msg);
+    window.self = this;
+    return h('div', { id: 'root' }, [
+      h(
+        'h1',
+        {
+          style: {
+            color: 'red',
+          },
+        },
+        `${this.msg}`
+      ),
+    ]);
   },
 
   setup() {
     return {
-      msg: 'Hello World',
+      msg: 'zz',
     };
   },
 };
