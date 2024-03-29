@@ -2,7 +2,8 @@
 
 import { defineConfig } from 'rollup';
 import typescript from '@rollup/plugin-typescript';
-
+import json from '@rollup/plugin-json';
+import pkg from './package.json' assert { type: 'json' };
 const onwarn = (warning) => {
   // Silence circular dependency warning for moment package
   if (warning.code === 'CIRCULAR_DEPENDENCY') {
@@ -14,8 +15,8 @@ const onwarn = (warning) => {
 export default defineConfig({
   input: 'src/index.ts',
   output: [
-    { file: 'lib/mini-vue.cjs.js', format: 'cjs' },
-    { file: 'lib/mini-vue.esm.js', format: 'esm' },
+    { file: pkg.main, format: 'cjs' },
+    { file: pkg.module, format: 'esm' },
   ],
-  plugins: [typescript()],
+  plugins: [typescript(), json()],
 });

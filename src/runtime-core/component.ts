@@ -35,8 +35,7 @@ export function handleSetupResult(instance: any, setupResult: any) {
 function finishComponentSetup(instance: any) {
   const component = instance.vnode.type;
 
-  if (component.render) {
-    // 如果用户设置了render函数，则使用用户的render函数
+  if (!instance.render && component.render) {
     instance.render = component.render;
   }
 }
