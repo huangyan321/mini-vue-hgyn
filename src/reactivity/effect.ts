@@ -68,7 +68,6 @@ export function track(target: any, key: string | symbol) {
   trackEffects(dep);
 }
 export function trackEffects(dep: Set<ReactiveEffect>) {
-  if (!isTracking()) return; //TODO 干掉
   if (dep.has(activeEffect!)) return;
   // 依赖收集，用于在触发更新的时候重新执行effect
   // 这里的dep是一个set，用于存储当前key关联的副作用(effect)

@@ -1,12 +1,10 @@
 /** @format */
-import { ReactiveEffect } from '.';
+import { ReactiveEffect } from './effect';
 class ComputedRefImpl {
-  private _getter: () => void;
   private dirty = true;
   private _value: any;
   private _effect: ReactiveEffect;
   constructor(getter: () => void) {
-    this._getter = getter;
     this._effect = new ReactiveEffect(getter, () => {
       if (!this.dirty) {
         this.dirty = true;

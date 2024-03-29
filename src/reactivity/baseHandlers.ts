@@ -1,7 +1,8 @@
 /** @format */
-import { reactive, track, trigger, readonly } from '.';
+import { reactive, readonly } from './reactive';
+import { track, trigger } from './effect';
 import { isObject, assign } from 'src/shared';
-import { ReactiveFlags } from './reactive';
+import { ReactiveFlags } from '../enums';
 const get = createGetter();
 const set = createSetter();
 

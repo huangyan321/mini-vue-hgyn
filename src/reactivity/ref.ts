@@ -4,8 +4,8 @@ import {
   trackEffects,
   triggerEffects,
   isTracking,
-  reactive,
-} from '.';
+} from './effect';
+import { reactive } from './reactive';
 import { hasChanged, isObject } from 'src/shared';
 export enum RefFlags {
   IS_REF = '__v_isRef',
@@ -14,7 +14,7 @@ class RefImpl {
   private _value: any;
   public dep: Set<ReactiveEffect>;
   private _rawValue: any;
-  private __v_isRef = true;
+  readonly __v_isRef = true;
   constructor(value: any) {
     this._rawValue = value;
     this._value = convert(value);
