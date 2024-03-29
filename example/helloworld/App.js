@@ -1,7 +1,8 @@
 /** @format */
 import { h } from '../../lib/mini-vue.esm.js';
 // import { Foo } from './Foo__props-test.js';
-import { Foo } from './Foo__emit-test.js';
+// import { Foo } from './Foo__emit-test.js';
+import { Foo } from './Foo__slot-test.js';
 
 export const App = {
   render() {
@@ -19,14 +20,14 @@ export const App = {
         },
         `${this.msg}`
       ),
-      h(Foo, {
-        onAdd: (num1, num2) => {
-          console.log(num1 + num2);
-        },
-        onAddFoo: (num1, num2) => {
-          console.log(num1 + num2);
-        },
-      }),
+      h(
+        Foo,
+        {},
+        {
+          header: ({ title }) => h('span', {}, title),
+          footer: ({ content }) => h('span', {}, content),
+        }
+      ),
     ]);
   },
 

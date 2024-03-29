@@ -1,11 +1,19 @@
 /** @format */
 import { publicInstanceProxyHandlers } from './componentPublicInstance';
 import { initProps } from './componentProps';
+import { initSlots } from './componentSlots';
 import { shallowReadonly } from '../reactivity';
+import { emit } from './componentEmit';
 export function createComponentInstance(vnode: any) {
   const instance = {
     vnode,
+    type: vnode.type,
+    setupState: {},
+    props: {},
+    slots: {},
+    emit: () => {},
   };
+  vnode.emit = emit as any;
   return instance;
 }
 
@@ -14,6 +22,8 @@ export function setupComponent(instance: any) {
   // 1. 处理props 将props挂载到实例上
   initProps(instance, instance.vnode.props);
   // 2. 处理slots
+  initSlots(instance, instance.vnode.children);
+
   setupStatefulComponent(instance);
 }
 export function setupStatefulComponent(instance: any) {
