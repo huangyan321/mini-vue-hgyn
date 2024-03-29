@@ -2,6 +2,7 @@
 
 import { createComponentInstance, setupComponent } from './component';
 import { ShapeFlags } from 'src/shared/shapeFlags';
+
 export function render(vnode: any, container: any) {
   patch(vnode, container);
 }
@@ -29,9 +30,15 @@ function mountElement(vnode: any, container: any) {
   }
   // handle props
   for (const key in props) {
-    el.setAttribute(key, props[key]);
+    const isOn = (key: string) => /^on[A-Z]/.test(key);
+    if (isOn(key)) {
+      const event = key.slice(2).toLowerCase();
+      el.addEventListener(event, props[key]);
+    } else {
+      el.setAttribute(key, props[key]);
+    }
   }
-  container.appendChild(el);
+  container.append(el);
 }
 
 function mountChildren(children: any[], container: any) {

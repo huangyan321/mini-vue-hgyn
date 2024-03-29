@@ -10,6 +10,12 @@ export const App = {
           style: {
             color: 'red',
           },
+          onClick() {
+            console.log('click');
+          },
+          onMousedown() {
+            console.log('mousedown');
+          },
         },
         `${this.msg}`
       ),
