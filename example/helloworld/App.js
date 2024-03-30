@@ -1,5 +1,5 @@
 /** @format */
-import { h } from '../../lib/mini-vue.esm.js';
+import { h, getCurrentInstance } from '../../lib/mini-vue.esm.js';
 // import { Foo } from './Foo__props-test.js';
 // import { Foo } from './Foo__emit-test.js';
 import { Foo } from './Foo__slot-test.js';
@@ -29,6 +29,8 @@ export const App = {
   },
 
   setup() {
+    const vm = getCurrentInstance();
+    console.log(vm);
     return {
       msg: 'zz',
     };

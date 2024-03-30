@@ -1,9 +1,12 @@
 /** @format */
 
-import { h, renderSlots, createTextVNode } from '../../lib/mini-vue.esm.js';
+import { h, renderSlots, createTextVNode,getCurrentInstance } from '../../lib/mini-vue.esm.js';
 
 export const Foo = {
-  setup(props) {},
+  setup(props) {
+    const vm = getCurrentInstance();
+    console.log('Foo', vm);
+  },
   render() {
     return h('div', { id: 'foo' }, [
       renderSlots(this.$slots, 'footer', {

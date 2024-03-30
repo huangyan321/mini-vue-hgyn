@@ -4,6 +4,7 @@ import { initProps } from './componentProps';
 import { initSlots } from './componentSlots';
 import { shallowReadonly } from '../reactivity';
 import { emit } from './componentEmit';
+let currentInstance: any = null;
 export function createComponentInstance(vnode: any) {
   const instance = {
     vnode,
@@ -32,11 +33,13 @@ export function setupStatefulComponent(instance: any) {
   instance.proxy = new Proxy({ _: instance }, publicInstanceProxyHandlers);
   const { setup } = component;
   if (setup) {
+    setCurrentInstance(instance);
     // 执行setup
     const setupResult = setup(shallowReadonly(instance.props), {
       emit: instance.emit.bind(null, instance),
     });
     handleSetupResult(instance, setupResult);
+    setCurrentInstance(null);
   }
 }
 export function handleSetupResult(instance: any, setupResult: any) {
@@ -55,4 +58,11 @@ function finishComponentSetup(instance: any) {
   if (!instance.render && component.render) {
     instance.render = component.render;
   }
+}
+
+function setCurrentInstance(instance: any) {
+  currentInstance = instance;
+}
+export function getCurrentInstance() {
+  return currentInstance;
 }
