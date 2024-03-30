@@ -11,9 +11,6 @@ export const App = {
       h(
         'h1',
         {
-          style: {
-            color: 'red',
-          },
           onMousedown: () => {
             console.log('mousedown');
           },
