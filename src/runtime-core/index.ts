@@ -1,5 +1,6 @@
 /** @format */
 
-export * from './createApp';
-export * from './h';
-export * from './helpers/renderSlots';
+export { createApp } from './createApp';
+export { h } from './h';
+export { renderSlots } from './helpers/renderSlots';
+export { createTextVNode } from './vnode';

@@ -1,6 +1,6 @@
 /** @format */
 
-import { h, renderSlots } from '../../lib/mini-vue.esm.js';
+import { h, renderSlots, createTextVNode } from '../../lib/mini-vue.esm.js';
 
 export const Foo = {
   setup(props) {},
@@ -13,6 +13,7 @@ export const Foo = {
         title: 'header',
       }),
       h('div', null, '标记'),
+      createTextVNode('文本'),
     ]);
   },
 };
