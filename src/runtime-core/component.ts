@@ -13,7 +13,7 @@ export function createComponentInstance(vnode: any) {
     slots: {},
     emit: () => {},
   };
-  vnode.emit = emit as any;
+  instance.emit = emit as any;
   return instance;
 }
 
@@ -34,7 +34,7 @@ export function setupStatefulComponent(instance: any) {
   if (setup) {
     // 执行setup
     const setupResult = setup(shallowReadonly(instance.props), {
-      emit: instance.vnode.emit.bind(null, instance),
+      emit: instance.emit.bind(null, instance),
     });
     handleSetupResult(instance, setupResult);
   }
