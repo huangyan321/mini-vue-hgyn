@@ -26,7 +26,7 @@ function mountElement(vnode: any, container: any) {
   if (vnode.shapeFlag & ShapeFlags.TEXT_CHILDREN) {
     el.textContent = children;
   } else if (vnode.shapeFlag & ShapeFlags.ARRAY_CHILDREN) {
-    mountChildren(children, container);
+    mountChildren(children, el);
   }
   // handle props
   for (const key in props) {
