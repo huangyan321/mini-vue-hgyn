@@ -5,13 +5,15 @@ import { initSlots } from './componentSlots';
 import { shallowReadonly } from '../reactivity';
 import { emit } from './componentEmit';
 let currentInstance: any = null;
-export function createComponentInstance(vnode: any) {
+export function createComponentInstance(vnode: any, parent: any) {
   const instance = {
     vnode,
     type: vnode.type,
     setupState: {},
     props: {},
     slots: {},
+    provides: parent?.provides ?? {},
+    parent,
     emit: () => {},
   };
   instance.emit = emit as any;
