@@ -20,8 +20,12 @@ export function inject(key: any, defaultValue: any) {
   const currentInstance = getCurrentInstance();
   if (currentInstance) {
     const parentProvides = currentInstance.parent?.provides;
-    return parentProvides[key] || typeof defaultValue === 'function'
-      ? defaultValue()
-      : defaultValue;
+    if (parentProvides[key]) {
+      return parentProvides[key];
+    } else if (typeof defaultValue === 'function') {
+      return defaultValue();
+    } else {
+      return defaultValue;
+    }
   }
 }
