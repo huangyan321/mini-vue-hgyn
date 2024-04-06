@@ -10,13 +10,17 @@ function createTextNode(text: string) {
 function insert(el: string, container: any) {
   return container.append(el);
 }
-function patchProps(el: any, key: any, val: any) {
+function patchProps(el: any, key: any, prevValue: any, nextValue: any) {
   const isOn = (key: string) => /^on[A-Z]/.test(key);
   if (isOn(key)) {
     const event = key.slice(2).toLowerCase();
-    el.addEventListener(event, val);
+    el.addEventListener(event, nextValue);
   } else {
-    el.setAttribute(key, val);
+    if (nextValue === null || nextValue === undefined) {
+      el.removeAttribute(key);
+    } else {
+      el.setAttribute(key, nextValue);
+    }
   }
 }
 

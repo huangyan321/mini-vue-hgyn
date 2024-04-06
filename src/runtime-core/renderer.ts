@@ -62,7 +62,28 @@ export function createRenderer(options: any) {
     n2: any,
     container: any,
     parentComponent?: any
-  ) {}
+  ) {
+    const oldProps = n1.props || {};
+    const newProps = n2.props || {};
+
+    const el = (n2.el = n1.el);
+    patchProps(el, oldProps, newProps);
+  }
+  function patchProps(el: any, oldProps: any, newProps: any) {
+    if (oldProps === newProps) return;
+    for (const key in newProps) {
+      const prev = oldProps[key];
+      const next = newProps[key];
+      if (prev !== next) {
+        patchHostProps(el, key, prev, next);
+      }
+    }
+    for (const key in oldProps) {
+      if (!(key in newProps)) {
+        patchHostProps(el, key, oldProps[key], null);
+      }
+    }
+  }
   function mountElement(
     initialVNode: any,
     container: any,
@@ -78,7 +99,7 @@ export function createRenderer(options: any) {
     // handle props
     // handle props
     for (const key in props) {
-      patchHostProps(el, key, props[key]);
+      patchHostProps(el, key, null, props[key]);
     }
     hostInsert(el, container);
   }
