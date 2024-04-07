@@ -15,8 +15,8 @@ const onwarn = (warning) => {
 export default defineConfig({
   input: 'src/index.ts',
   output: [
-    { file: pkg.main, format: 'cjs' },
-    { file: pkg.module, format: 'esm' },
+    { file: pkg.main, format: 'cjs', sourcemap: true },
+    { file: pkg.module, format: 'esm', sourcemap: true },
   ],
   plugins: [typescript(), json()],
 });

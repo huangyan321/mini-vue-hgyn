@@ -7,8 +7,17 @@ function createElement(type: any) {
 function createTextNode(text: string) {
   return document.createTextNode(text);
 }
-function insert(el: string, container: any) {
-  return container.append(el);
+function setElementText(el: any, text: string) {
+  return (el.textContent = text);
+}
+function insert(el: string, container: any, anchor: any) {
+  container.insertBefore(el, anchor);
+}
+function remove(el: any) {
+  const parent = el.parentNode;
+  if (parent) {
+    parent.removeChild(el);
+  }
 }
 function patchProps(el: any, key: any, prevValue: any, nextValue: any) {
   const isOn = (key: string) => /^on[A-Z]/.test(key);
@@ -29,6 +38,8 @@ export const renderer: any = createRenderer({
   createElement,
   patchProps,
   insert,
+  remove,
+  setElementText,
 });
 export function createApp(...args: any[]) {
   return renderer.createApp(...args);

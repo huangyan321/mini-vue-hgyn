@@ -51,7 +51,7 @@ export function handleSetupResult(instance: any, setupResult: any) {
   if (typeof setupResult === 'function') {
     instance.render = setupResult;
   } else {
-    instance.setupState = proxyRef(setupResult);
+    instance.setupState = proxyRef(setupResult || {});
   }
 
   finishComponentSetup(instance);

@@ -1,9 +1,9 @@
 /** @format */
 
 import { ref, h } from '../../lib/mini-vue.esm.js';
-const preChildren = [h('div', {}, 'A'), h('div', {}, 'B')];
-const nextChildren = 'next children';
-export const Text2Array = {
+const preChildren = 'pre children';
+const nextChildren = 'new children';
+export const Text2Text = {
   setup() {
     const isChange = ref(false);
     window.isChange = isChange;
