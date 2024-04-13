@@ -19,11 +19,29 @@ function remove(el: any) {
     parent.removeChild(el);
   }
 }
+const veiKey = Symbol('_vei');
 function patchProps(el: any, key: any, prevValue: any, nextValue: any) {
   const isOn = (key: string) => /^on[A-Z]/.test(key);
   if (isOn(key)) {
+    // 用一层wrapper包裹，方便后续patch时直接替换value 为新的事件处理函数，而不用重新绑定事件
+    const invokers = el[veiKey] || (el[veiKey] = {});
+    const existingInvoker = invokers[key];
     const event = key.slice(2).toLowerCase();
-    el.addEventListener(event, nextValue);
+    if (nextValue && existingInvoker) {
+      // patch
+      existingInvoker.value = nextValue;
+    } else {
+      if (nextValue) {
+        const invoker = (invokers[key] = (e: Event) => {
+          (invoker as any).value(e);
+        });
+        (invoker as any).value = nextValue;
+        el.addEventListener(event, invoker);
+      } else if (existingInvoker) {
+        el.removeEventListener(event, existingInvoker);
+        invokers[key] = undefined;
+      }
+    }
   } else {
     if (nextValue === null || nextValue === undefined) {
       el.removeAttribute(key);
