@@ -5,4 +5,5 @@ export { renderSlots } from './helpers/renderSlots';
 export { createTextVNode } from './vnode';
 export { createRenderer } from './renderer';
 export { getCurrentInstance } from './component';
+export { nextTick } from './scheduler';
 export * from './apiInject';
