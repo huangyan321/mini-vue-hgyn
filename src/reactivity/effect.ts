@@ -13,7 +13,9 @@ export class ReactiveEffect {
   public scheduler: any;
   public deps: any[] = [];
   active: boolean = true;
+  expression: string;
   constructor(fn: () => void, scheduler?: any) {
+    this.expression = fn.toString();
     this._fn = fn;
     this.scheduler = scheduler;
   }
@@ -21,14 +23,17 @@ export class ReactiveEffect {
   run() {
     activeEffect = this;
     if (this.active) {
-      return this._fn();
+      const res = this._fn();
+      activeEffect = undefined;
+      return res;
     }
     shouldTrack = true;
     const result = this._fn();
     shouldTrack = false;
+    activeEffect = undefined;
     return result;
   }
-
+  // 停止自动触发更新(可手动运行runner来触发更新)
   stop() {
     if (this.active) {
       cleanupEffect(this);
@@ -43,7 +48,7 @@ function cleanupEffect(effect: any) {
       dep.delete(activeEffect);
     });
     activeEffect.deps.length = 0;
-    activeEffect = void 0;
+    activeEffect = undefined;
   }
 }
 /**
