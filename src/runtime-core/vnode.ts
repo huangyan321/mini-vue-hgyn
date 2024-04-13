@@ -10,6 +10,7 @@ export function createVNode(type: any, props?: any, children?: any) {
     children,
     el: null,
     shapeFlag: getShapeFlag(type),
+    component: null,
   };
   if (Array.isArray(children)) {
     vnode.shapeFlag |= ShapeFlags.ARRAY_CHILDREN;

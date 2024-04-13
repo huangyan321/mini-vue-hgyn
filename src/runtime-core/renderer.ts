@@ -5,6 +5,7 @@ import { ShapeFlags } from 'src/shared/shapeFlags';
 import { Fragment, Text } from './vnode';
 import { createAppAPI } from './createApp';
 import { effect } from 'src';
+import { shouldUpdateComponent } from './componentUpdateUtils';
 export function createRenderer(options: any) {
   const {
     createText: createHostText,
@@ -64,15 +65,10 @@ export function createRenderer(options: any) {
     if (!n1) {
       mountElement(n2, container, anchor, parentComponent);
     } else {
-      patchElement(n1, n2, container, parentComponent);
+      patchElement(n1, n2);
     }
   }
-  function patchElement(
-    n1: any,
-    n2: any,
-    container: any,
-    parentComponent?: any
-  ) {
+  function patchElement(n1: any, n2: any) {
     const oldProps = n1.props || {};
     const newProps = n2.props || {};
 
@@ -235,45 +231,60 @@ export function createRenderer(options: any) {
     if (!n1) {
       mountComponent(n2, container, parentComponent);
     } else {
-      patchComponent(n1, n2, container, parentComponent);
+      patchComponent(n1, n2);
     }
   }
-  function patchComponent(
-    n1: any,
-    n2: any,
-    container: any,
-    parentComponent?: any
-  ) {
+  function patchComponent(n1: any, n2: any) {
     // TODO
+    const instance = (n2.component = n1.component);
+    if (shouldUpdateComponent(n1, n2)) {
+      instance.next = n2;
+      instance.updater();
+    }else {
+      n1.el = n2.el;
+      instance.vnode = n2;
+    }
   }
   function mountComponent(
     initialVNode: any,
     container: any,
     parentComponent?: any
   ) {
-    const instance = createComponentInstance(initialVNode, parentComponent);
+    const instance = (initialVNode.component = createComponentInstance(
+      initialVNode,
+      parentComponent
+    ));
     setupComponent(instance);
     setupRenderEffect(instance, initialVNode, container);
   }
 
   function setupRenderEffect(instance: any, initialVNode: any, container: any) {
-    effect(() => {
+    instance.updater = effect(() => {
       if (!instance.isMounted) {
-        console.log('init');
         const { proxy } = instance;
+
         const subTree = instance.render && instance.render.apply(proxy);
         instance.subTree = subTree;
         patch(null, subTree, container, null, instance);
         initialVNode.el = subTree.el;
         instance.isMounted = true;
       } else {
-        console.log('patch');
+        const { next, vnode } = instance;
+        if (next) {
+          next.el = vnode.el;
+          updateComponentPreRender(instance, next);
+        }
         const { proxy } = instance;
         const prevTree = instance.subTree;
         const nextTree = (instance.subTree = instance.render.apply(proxy));
         patch(prevTree, nextTree, container, null, instance);
       }
     });
+  }
+  function updateComponentPreRender(instance: any, nextVNode: any) {
+    instance.props = nextVNode.props;
+    instance.vnode = nextVNode;
+    instance.next = null;
   }
   return {
     createApp: createAppAPI(render),

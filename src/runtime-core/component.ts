@@ -17,6 +17,8 @@ export function createComponentInstance(vnode: any, parent: any) {
     isMounted: false,
     parent,
     emit: () => {},
+    updater: null,
+    next: null,
   };
   instance.emit = emit as any;
   return instance;
